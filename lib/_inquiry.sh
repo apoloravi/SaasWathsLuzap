@@ -13,7 +13,7 @@ get_link_git() {
   print_banner
   printf "${WHITE} 💻 Insira o link do Github da sua instalção que deseja instalar:${GRAY_LIGHT}"
   printf "\n\n"
-  read -p "> " link_git
+  read -p "> " link_git="https://github.com/apoloravi/SaasWathsLuzap"
 }
 
 get_instancia_add() {
