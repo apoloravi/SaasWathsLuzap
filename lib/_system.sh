@@ -15,8 +15,8 @@ system_create_user() {
   sleep 2
 
   sudo su - root <<EOF
-  useradd -m -p $(openssl passwd -crypt ${mysql_root_password}) -s /bin/bash -G sudo deploy
-  usermod -aG sudo deploy
+  useradd -m -p $(openssl passwd -crypt ${mysql_root_password}) -s /bin/bash -G sudo root
+  usermod -aG sudo root
 EOF
 
   sleep 2
@@ -35,8 +35,8 @@ system_git_clone() {
 
   sleep 2
 
-  sudo su - deploy <<EOF
-  git clone ${link_git} /home/deploy/${instancia_add}/
+  sudo su - root <<EOF
+  git clone ${link_git} /home/${instancia_add}/
 EOF
 
   sleep 2
@@ -93,8 +93,8 @@ EOF
 
 sleep 2
 
-sudo su - deploy <<EOF
- rm -rf /home/deploy/${empresa_delete}
+sudo su - root <<EOF
+ rm -rf /home/${empresa_delete}
  pm2 delete ${empresa_delete}-frontend ${empresa_delete}-backend
  pm2 save
 EOF
@@ -122,7 +122,7 @@ configurar_bloqueio() {
 
   sleep 2
 
-sudo su - deploy <<EOF
+sudo su - root <<EOF
  pm2 stop ${empresa_bloquear}-backend
  pm2 save
 EOF
@@ -149,7 +149,7 @@ configurar_desbloqueio() {
 
   sleep 2
 
-sudo su - deploy <<EOF
+sudo su - root <<EOF
  pm2 start ${empresa_bloquear}-backend
  pm2 save
 EOF
@@ -184,10 +184,10 @@ EOF
 
 sleep 2
 
-  sudo su - deploy <<EOF
-  cd && cd /home/deploy/${empresa_dominio}/frontend
+  sudo su - root <<EOF
+  cd && cd /home/${empresa_dominio}/frontend
   sed -i "1c\REACT_APP_BACKEND_URL=https://${alter_backend_url}" .env
-  cd && cd /home/deploy/${empresa_dominio}/backend
+  cd && cd /home/${empresa_dominio}/backend
   sed -i "2c\BACKEND_URL=https://${alter_backend_url}" .env
   sed -i "3c\FRONTEND_URL=https://${alter_frontend_url}" .env 
 EOF
@@ -252,7 +252,7 @@ EOF
   frontend_domain=$(echo "${frontend_url/https:\/\/}")
 
   sudo su - root <<EOF
-  certbot -m $deploy_email \
+  certbot -m $root_email \
           --nginx \
           --agree-tos \
           --non-interactive \
@@ -498,7 +498,7 @@ system_nginx_conf() {
 
 sudo su - root << EOF
 
-cat > /etc/nginx/conf.d/deploy.conf << 'END'
+cat > /etc/nginx/conf.d/root.conf << 'END'
 client_max_body_size 100M;
 END
 
@@ -523,7 +523,7 @@ system_certbot_setup() {
   frontend_domain=$(echo "${frontend_url/https:\/\/}")
 
   sudo su - root <<EOF
-  certbot -m $deploy_email \
+  certbot -m $root_email \
           --nginx \
           --agree-tos \
           --non-interactive \
